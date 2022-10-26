@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<h3>학급별 학생 목록</h3>
+<th:block th:each="classInfo : ${mapData}">
+	<h5 th:text="${classInfo.key}"></h5>
+	<table border="1">
+		<tr>
+			<td>아이디</td>
+			<td>이름</td>
+		</tr>
+		<tr th:each ="student : ${classInfo.value}">
+			<td th:text="${student.memberId}"></td>
+			<td th:text="${student.memberName}"></td>
+		</tr>
+	</table>
+</th:block>
+
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 해당 파일에 모든 쿼리문을 작성 -->
+<mapper namespace="itemMapper">
+ 	<resultMap type="kh.study.shop.item.vo.ItemVO" id="item">
+		<id column="ITEM_CODE" 				property="itemCode"/>
+		<result column="ITEM_NAME" 			property="itemName"/>
+		<result column="ITEM_PRICE" 		property="itemPrice"/>
+		<result column="ITEM_COMMENT" 		property="itemComment"/>
+		<result column="REG_DATE" 			property="regDate"/>
+		<result column="ITEM_STOCK" 		property="itemStock"/>
+		<result column="CATE_CODE"			property="cateCode"/>
+ 		<!-- <result column="CATE_NAME" 			property="cateName"/> -->
+		<result column="ITEM_STATUS" 		property="itemStatus"/>
+		<association property="categoryVO" 	resultMap="adminMapper.category"/>
+		<collection property="imgList" 		resultMap="img"/>
+	</resultMap>
+	
+	<resultMap type="kh.study.shop.item.vo.ImgVO" id="img">
+		<id column="IMG_CODE" 		property="imgCode"/>
+		<result column="ORIGIN_NAME" 	property="originName"/>
+		<result column="ATTACHED_NAME" 	property="attachedName"/>
+		<result column="IS_MAIN" 		property="isMain"/>
+		<result column="ITEM_CODE"		property="itemCode"/>
+	</resultMap>
+
+	<select id="selectItemList" resultMap="item">
+		SELECT ITEM.ITEM_CODE
+			, ITEM_NAME
+			, ITEM_PRICE
+			, ATTACHED_NAME
+		FROM SHOP_ITEM ITEM, ITEM_IMG IMG
+		WHERE ITEM.ITEM_CODE = IMG.ITEM_CODE
+		AND IS_MAIN = 'Y'
+		ORDER BY ITEM.ITEM_CODE DESC
+	</select>
+	
+	<select id="selectItemDetail" resultMap="item">
+		SELECT ITEM.ITEM_CODE
+			, ITEM_NAME
+			, ITEM_PRICE
+			, ITEM_COMMENT
+			, CATE.CATE_NAME
+			, ATTACHED_NAME
+			, ITEM_STOCK
+			, IS_MAIN
+		FROM SHOP_ITEM ITEM, ITEM_CATEGORY CATE, ITEM_IMG IMG
+		WHERE ITEM.CATE_CODE = CATE.CATE_CODE
+		AND ITEM.ITEM_CODE = IMG.ITEM_CODE
+		AND ITEM.ITEM_CODE = #{itemCode}
+	</select>
+
+	
+</mapper>

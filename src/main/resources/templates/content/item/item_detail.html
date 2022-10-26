@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	layout:decorate="layout/base_layout">
+
+<th:block layout:fragment="css">
+	<!-- <link rel="stylesheet" th:href="@{}"> -->
+</th:block>
+
+<div layout:fragment="content">
+	<div class="row justify-content-center">
+		<div class="col-6">
+			<div class="row mb-3 mt-3">
+				<div class="col-6">
+					<!-- item만으로는 for문을 사용하지 못하고 item 안에 있는 imgList는 list이기 때문에 for문이 가능 -->
+					<th:block th:each="img : ${item.imgList}">
+						<th:block th:if="${img.isMain eq 'Y'}">
+							<img th:src="|@{/images/}${img.attachedName}|" class="card-img-top" alt="..." style="width: 220px;">
+						</th:block>
+					</th:block>
+				</div>
+				<div class="col-6 align-self-center">
+ 					<div class="row mb-3">
+						<label for="" class="col-12 col-form-label">[[${item.categoryVO.cateName}]]</label>
+					</div>
+ 					<div class="row mb-3">
+						<b><label for="" class="col-12 col-form-label">[[${item.itemName}]]</label></b>
+					</div>
+					<div class="row mb-3">
+						<label for="" class="col-12 col-form-label">[[${#numbers.formatCurrency(item.itemPrice)}]]</label>
+					</div>
+					<div class="row mb-3">
+						<label for="" class="col-3 col-form-label">수량</label>
+						<div class="col-9"> <!-- onchange="changeTotalPrice();" -->
+							<input name="cartAmount" type="number" class="form-control" value="1" min="1" id="cartAmount">
+							<input type="hidden" name="itemCode" th:value="${item.itemCode}" id="itemCode">
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-4">총 가격</div>
+						<div class="col-8">
+							<span id="totalPriceSpan">[[${#numbers.formatCurrency(item.itemPrice)}]]</span>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-6">
+						<form th:action="@{/buy/buyInfoDirect}" method="post" id="buyForm">
+							<input type="hidden" name="itemCode" th:value="${item.itemCode}">
+							<input type="hidden" name="buyAmount" value="" id="buyAmountInput">
+						</form>
+							<button th:onclick="buy();" type="button" class="btn btn-primary form-control">구매</button>
+						</div>
+						<div class="col-6">
+							<button th:onclick="addCart();" type="button" class="btn btn-primary form-control">
+								장바구니
+								<!-- display: none : 없는 태그 취급, layout에 영향 X -->
+								<!-- visibility: hidden : 눈에는 안 보이는데 공간은 유지, layout에 영향을 줌 -->
+								<div id="test" style="display: none;">
+									<div sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')">
+										1
+									</div>
+								</div>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row mb-3">	
+				<div class="col-12">
+					[[${item.itemComment}]]
+				</div>
+			</div>
+			<div class="row mb-3">	
+				<div class="col-12">
+					<th:block th:each="img : ${item.imgList}">
+						<th:block th:if="${img.isMain eq 'N'}">
+							<img th:src="|@{/images/}${img.attachedName}|" class="card-img-top mb-3" alt="...">
+						</th:block>
+					</th:block>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 장바구니 버튼 클릭 후 실행되는 Modal -->
+	<div class="modal fade" id="regCartModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+ 				<!-- <div class="modal-header">
+					<h5 class="modal-title fs-5" id="exampleModalLabel">재고 수량 변경 결과</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div> -->
+				<div class="modal-body">
+					<div class="row mb-3">
+						<div class="col">
+							<div>장바구니에 상품을 등록했습니다.</div>
+							<div>장바구니 페이지로 이동할까요?</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col text-end">
+							<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" style="--bs-btn-padding-y: 0.25rem; --bs-btn-padding-x: 3rem; --bs-btn-font-size: 1rem;">취소</button>
+							<button th:onclick="|location.href='@{/cart/cartList}'|" type="button" class="btn btn-primary btn-sm" style="--bs-btn-padding-y: 0.25rem; --bs-btn-padding-x: 3rem; --bs-btn-font-size: 1rem;">확인</button>
+						</div> <!-- 변수 없어서 버티컬바 안 써도 됨 -->
+					</div>
+				</div>
+				<!-- <div class="modal-footer">
+					<button type="button" class="btn btn-success" data-bs-dismiss="modal">확인</button>
+				</div> -->
+			</div>
+		</div>
+	</div>
+	
+	<script type="text/javascript" th:src="@{/js/item/item_detail.js}"></script>
+</div>
+
+</html>

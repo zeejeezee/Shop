@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<div th:fragment="top">
+	<input type="hidden" id="isLoginFail" th:value="${isLoginFail}">
+	
+	<div class="row mt-3">
+		<div class="col text-end">
+			<div sec:authorize="isAnonymous()">
+				<span data-bs-toggle="modal" data-bs-target="#join_modal">JOIN</span>
+				<span data-bs-toggle="modal" data-bs-target="#login_modal">LOGIN</span>
+			</div>
+			<div sec:authorize="isAuthenticated()">
+				<span th:text="${#authentication.name}"></span>님 반갑습니다.
+				<a th:href="@{/cart/cartList}">내 정보 관리</a>
+				<a th:href="@{/logout}">LOGOUT</a>
+			</div>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col text-center fs-1" style="font-weight: bold;">
+			<a th:href="@{/item/list}">BOOK STORE</a>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+			<!-- <nav class="navbar navbar-expand-lg bg-light"> -->
+				<div class="container-fluid">
+					<button class="navbar-toggler" type="button"
+						data-bs-toggle="collapse" data-bs-target="#navbarNav"
+						aria-controls="navbarNav" aria-expanded="false"
+						aria-label="Toggle navigation">
+						<span class="navbar-toggler-icon"></span>
+					</button>
+					<div class="collapse navbar-collapse" id="navbarNav">
+						<ul class="navbar-nav">
+							<li class="nav-item">
+								<a class="nav-link" href="#">전체상품</a>
+							</li>
+							<th:block th:each="category : ${categoryListInUse}">
+								<li class="nav-item">
+									<a class="nav-link" href="#" th:text="${category.cateName}"></a>
+								</li>
+							</th:block>
+						</ul>
+					</div>
+				</div>
+			</nav>
+		</div>
+	</div>
+	
+	
+	<!-- Login 버튼 클릭시 실행되는 Modal -->
+	<!-- Modal -->
+	<div class="modal fade" id="login_modal" tabindex="-1"aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form class="row g-3" action="/member/login" method="post">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Login</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="mb-3">
+							<label for="memberId" class="form-label">ID</label>
+							<input name="memberId" type="text" class="form-control" id="memberId" placeholder="input your ID">
+						</div>
+						<div class="mb-3">
+							<label for="memberPw" class="form-label">PASSWORD</label>
+							<input name="memberPw" type="password" class="form-control" id="memberPw" placeholder="input your Password">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary"	data-bs-dismiss="modal">Close</button>
+						<button type="submit" class="btn btn-primary">Login</button>
+						<button type="button" class="btn btn-primary" onclick="login();">AjaxLogin</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>	
+	
+	<!-- Join 버튼 클릭시 실행되는 Modal -->
+	<!-- Modal -->
+	<div class="modal fade" id="join_modal" tabindex="-1"aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">JOIN</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form class="row g-3" action="/member/join" method="post">
+						<div class="col-12">
+							<label for="memberId" class="form-label">ID</label>
+							<input type="text" class="form-control" id="memberId" name="memberId">
+						</div>
+						<div class="col-12">
+							<label for="memberPw" class="form-label">PASSWORD</label>
+							<input type="password" class="form-control" id="memberPw" name="memberPw">
+						</div>
+						<div class="col-12">
+							<label for="memberName" class="form-label">NAME</label>
+							<input type="text" class="form-control" id="memberName" name="memberName">
+						</div>
+						<div class="col-9">
+							<label for="memberAddr" class="form-label">ADDRESS</label>
+							<input type="text" class="form-control" id="memberAddr" readonly onclick="searchAddr();" name="memberAddr">
+							<!-- 주소를 임의로 변경하지 못하게 'readonly' 속성 추가 -->
+							<!-- disable과 readonly의 차이점 : 메모장 -->
+						</div>						
+						<div class="col-3">
+							<label for="" class="form-label">&nbsp;</label>
+							<!-- <button type="submit" class="btn btn-primary">Search</button> -->
+							<!-- 높이 너비 맞추기 위해 class에 form-control 추가 -->
+							<input onclick="searchAddr();" type="button" class="btn btn-secondary form-control" value="Search">
+						</div>
+						<div class="col-12">
+							<input type="text" class="form-control" id="addrDetail" name="addrDetail">
+						</div>
+						<div class="col-12">
+							<label for="memberEmail" class="form-label">EMAIL</label>
+							<input type="email" class="form-control" id="memberEmail" name="memberEmail">
+						</div>							
+						<div class="col-12 d-grid gap-2">
+							<button type="submit" class="btn btn-primary">JOIN</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<!-- <script type="text/javascript" src="/js/layout/top.js"></script> -->
+<!-- thymeleaf로 사용하는 방법 -->
+<!-- 경로나 테이블 이동시 타임리프에서는 @{}로 감싸 준다 -->
+<script type="text/javascript" th:src="@{/js/layout/top.js}"></script> 
+
+</div>
+</html>
+
+
+
+
+
+

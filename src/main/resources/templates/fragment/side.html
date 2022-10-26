@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+ <div th:fragment="sideFragment">
+ 	<div sec:authorize="hasRole('ADMIN')">
+		<ul class="list-group">
+			<li class="list-group-item" th:classappend="${menu} eq '1' ? 'active'" aria-current="true">
+				<a th:href="@{/admin/regItem(menu=1)}">상품등록</a>
+			</li>
+			<li class="list-group-item" th:classappend="${menu} eq '2' ? 'active'">
+				<a th:href="@{/admin/itemManage(menu=2)}">상품관리</a>
+			</li>
+			<li class="list-group-item" th:classappend="${menu} eq '3' ? 'active'">
+				<a th:href="@{/admin/memberManage(menu=3)}">회원권한설정</a>
+			</li>
+			<li class="list-group-item" th:classappend="${menu} eq '4' ? 'active'">
+				<a th:href="@{/admin/menuManage(menu=4)}">메뉴관리</a>
+			</li>
+		</ul>
+ 	</div>
+	<div sec:authorize="hasRole('MEMBER')">
+		<ul class="list-group">
+			<li class="list-group-item" th:classappend="${menu} eq '1' ? 'active'" aria-current="true">
+				<a th:href="@{/cart/cartList(menu=1)}">장바구니목록</a>
+			</li>
+			<li class="list-group-item" th:classappend="${menu} eq '2' ? 'active'">
+				<a>내 정보 수정</a>
+			</li>
+			<li class="list-group-item" th:classappend="${menu} eq '3' ? 'active'">
+				<a th:href="@{/member/buyList(menu=3)}">구매내역조회</a>
+			</li>
+		</ul>
+	</div>
+</div>
+
+</html>

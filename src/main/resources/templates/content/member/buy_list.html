@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	layout:decorate="~{layout/admin_layout}">
+
+<th:block layout:fragment="css">
+	<!-- <link rel="stylesheet" th:href="@{}"> -->
+</th:block>	
+
+<div layout:fragment="content">
+
+	<div class="accordion mb-3" id="accordionPanelsStayOpenExample">
+		<div class="accordion-item" th:each="buyInfo : ${buyList}">
+			<h2 class="accordion-header" id="panelsStayOpen-headingOne">
+				<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" th:data-bs-target="|#panelsStayOpen-collapseOne${buyInfoStat.count}|" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+						<span th:text="${#lists.size(buyList) - buyInfoStat.index}"
+							style="width: 2rem; display: inline-block; font-size: 1.2rem; font-weight: bold; font-style: italic;"></span>|
+						<span style="margin-left: 2rem;">
+							<span style="font-weight: bold; font-size: 1.1rem;">[[${buyInfo.buyDate}]]</span>
+							에 총 
+							<span style="font-weight: bold; font-size: 1.1rem;">[[${buyInfo.buyCnt}]]</span>
+							건의 주문으로 
+							<span style="font-weight: bold; font-size: 1.1rem;">[[${#numbers.formatCurrency(buyInfo.totalPrice)}]]</span>
+							을 결제했습니다.
+						</span>
+				</button>
+			</h2>
+			<div th:id="|panelsStayOpen-collapseOne${buyInfoStat.count}|" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingOne">
+				<div class="accordion-body">
+					<table class="table table-striped text-center align-middle">
+						<colgroup>
+							<col width="10%">
+							<col width="15%">
+							<col width="*">
+							<col width="12%">
+							<col width="12%">
+							<col width="12%">
+						</colgroup>
+						<tr>
+							<td>No</td>
+							<td colspan="2">상품정보</td>
+							<td>가격</td>
+							<td>수량</td>
+							<td>총 가격</td>
+						</tr>
+						<tr th:each="buyDetail : ${buyInfo.buyDetailList}">
+							<td>
+								<span th:text="${buyDetailStat.count}"></span>
+							</td>
+							<td class="text-end">
+								<img th:src="|@{/images/}${buyDetail.itemVO.imgList[0].attachedName}|" class="card-img-top" alt="..." style="width: 70px;">
+							</td>
+							<td class="text-start">[<span th:text="${buyDetail.itemVO.categoryVO.cateName}"></span>] [[${buyDetail.itemVO.itemName}]]</td>
+							<td th:text="${#numbers.formatCurrency(buyDetail.itemVO.itemPrice)}"></td>
+							<td>[[${buyDetail.buyAmount}]]</td>
+							<td th:text="${#numbers.formatCurrency(buyDetail.buyPrice)}"></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+</html>

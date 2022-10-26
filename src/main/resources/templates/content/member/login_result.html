@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+</head>
+<body>
+<div sec:authorize="isAnonymous()"> <!-- 로그인 안 됐을 때 -->
+	<script type="text/javascript">
+		alert('로그인 실패');
+		location.href='/item/list?isLoginFail=true';
+		//로그인 실패하면 자동으로 모달 창을 띄운다
+		//실패 후 /item/list로 갈 때 loginFail이라는 이름으로 true를 가지고 간다
+	</script>
+</div>
+
+
+<div sec:authorize="isAuthenticated()">
+	<div sec:authorize="hasRole('ROLE_MEMBER')"> <!-- 권한이 관리자일 때 -->
+		<script type="text/javascript">
+			alert('로그인 성공');
+			location.href='/item/list';
+		</script>
+	</div>
+	<div sec:authorize="hasRole('ROLE_ADMIN')"> <!-- 권한이 관리자일 때 -->
+		<script type="text/javascript">
+			alert('관리자로 로그인했습니다.');
+			location.href='/admin/regItem';
+		</script>
+	</div>
+</div>
+
+
+
+
+
+</body>
+</html>

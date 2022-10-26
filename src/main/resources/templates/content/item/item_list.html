@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="layout/base_layout">
+<!-- 이 html은 base_layout과 같이 열림-->
+
+<div layout:fragment="content">
+	<div class="row">
+		<div class="col-3 mt-3" th:each="item : ${itemList}">
+			<div class="card">
+				<img th:src="|@{/images/}${item.imgList[0].attachedName}|" class="card-img-top" alt="...">
+				<div class="card-body">
+					<h5 class="card-title">
+						<a th:href="@{/item/itemDetail(itemCode=${item.itemCode})}" th:text="${item.itemName}"></a>
+					</h5>
+					<p class="card-text" th:text="${#numbers.formatCurrency(item.itemPrice)}"></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</html>
+
+
+
+
+
+
+
+

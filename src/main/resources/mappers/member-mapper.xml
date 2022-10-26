@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 해당 파일에 모든 쿼리문을 작성 -->
+<mapper namespace="memberMapper">
+ 	<resultMap type="kh.study.shop.member.vo.MemberVO" id="member">
+		<id column="MEMBER_ID" 			property="memberId"/>
+		<result column="MEMBER_PW" 		property="memberPw"/>
+		<result column="MEMBER_NAME" 	property="memberName"/>
+		<result column="MEMBER_ADDR" 	property="memberAddr"/>
+		<result column="ADDR_DETAIL" 	property="addrDetail"/>
+		<result column="MEMBER_EMAIL" 	property="memberEmail"/>
+		<result column="MEMBER_ROLE" 	property="memberRole"/>
+		<result column="MEMBER_STATUS" 	property="memberStatus"/>
+	</resultMap>
+	
+	<insert id="join">
+		INSERT INTO SHOP_MEMBER (
+			MEMBER_ID
+			, MEMBER_PW
+			, MEMBER_NAME
+			, MEMBER_ADDR
+			, ADDR_DETAIL
+			, MEMBER_EMAIL
+			, MEMBER_STATUS
+			, MEMBER_ROLE
+		) VALUES (
+			#{memberId}
+			, #{memberPw}
+			, #{memberName}
+			, #{memberAddr}
+			, #{addrDetail}
+			, #{memberEmail}
+			, #{memberStatus}
+			, #{memberRole}
+		)
+	</insert>
+
+	<select id="login" resultMap="member">
+		SELECT MEMBER_ID
+			, MEMBER_ROLE
+			, MEMBER_PW
+		FROM SHOP_MEMBER
+		WHERE MEMBER_ID = #{memberId}
+	</select>
+
+
+	<!-- 구매자 정보 조회 -->
+	<select id="selectMemberInfo" resultMap="member">
+		SELECT MEMBER_ID
+			, MEMBER_NAME
+			, MEMBER_EMAIL
+			, MEMBER_ADDR||' '||ADDR_DETAIL AS MEMBER_ADDR
+		FROM SHOP_MEMBER
+		WHERE MEMBER_ID = #{memberId}
+	</select>
+
+	<!-- 구매 내역 조회 -->
+	<select id="getBuyList" resultMap="buyMapper.buy">
+		SELECT B.BUY_CODE
+		    , TO_CHAR(BUY_DATE, 'YYYY-MM-DD HH24:MI:SS') AS BUY_DATE
+		    , TOTAL_PRICE
+		    , (SELECT COUNT(BUY_DETAIL_CODE)
+		        FROM SHOP_BUY_DETAIL
+		        WHERE BUY_CODE = B.BUY_CODE) AS BUY_CNT
+		    , (SELECT ITEM_NAME
+		        FROM SHOP_ITEM
+		        WHERE ITEM_CODE = D.ITEM_CODE) AS ITEM_NAME
+		    , (SELECT ITEM_PRICE
+		        FROM SHOP_ITEM
+		        WHERE ITEM_CODE = D.ITEM_CODE) AS ITEM_PRICE
+		    , BUY_AMOUNT
+		    , (SELECT ITEM_PRICE
+		        FROM SHOP_ITEM
+		        WHERE ITEM_CODE = D.ITEM_CODE) * BUY_AMOUNT AS BUY_PRICE
+		    , (SELECT CATE_NAME
+		        FROM ITEM_CATEGORY
+		        WHERE CATE_CODE = (SELECT CATE_CODE
+		                            FROM SHOP_ITEM
+		                            WHERE ITEM_CODE = D.ITEM_CODE)) AS CATE_NAME
+		    , (SELECT ATTACHED_NAME
+		        FROM ITEM_IMG
+		        WHERE IS_MAIN ='Y'
+		        AND ITEM_CODE = D.ITEM_CODE) AS ATTACHED_NAME
+		FROM SHOP_BUY B
+		    , SHOP_BUY_DETAIL D
+		WHERE MEMBER_ID = #{memberId}
+		AND B.BUY_CODE = D.BUY_CODE
+		ORDER BY BUY_DATE DESC
+	</select>
+	
+	
+	
+	
+	
+	
+	
+
+	<!-- 구매 내역 조회 / 나 -->
+	<!-- 구매 시간, 구매 상품 개수, 총 금액 -->
+	<!-- 메인 이미지, 카테고리, 상품명, 가격, 수량, 총 가격 -->
+<!-- 	<select id="getBuyList" resultMap="buyMapper.buy">
+		SELECT BUY.BUY_CODE
+			, TO_CHAR(BUY_DATE, 'YYYY-MM-DD HH24:MI:SS') AS BUY_DATE
+			, TOTAL_PRICE
+			, (SELECT COUNT(BUY_DETAIL_CODE)
+				FROM SHOP_BUY_DETAIL
+				WHERE BUY_CODE = BUY.BUY_CODE) AS BUY_CNT
+			, BUY_DETAIL_CODE
+			, ATTACHED_NAME
+			, CATE_NAME
+			, ITEM.ITEM_NAME
+			, ITEM.ITEM_PRICE
+			, BUY_AMOUNT
+		FROM SHOP_BUY BUY
+			, SHOP_BUY_DETAIL DETAIL
+			, ITEM_CATEGORY CATE
+			, ITEM_IMG IMG
+			, SHOP_ITEM ITEM
+		WHERE BUY.BUY_CODE = DETAIL.BUY_CODE
+		AND ITEM.ITEM_CODE = IMG.ITEM_CODE
+		AND ITEM.CATE_CODE = CATE.CATE_CODE
+		AND ITEM.ITEM_CODE = DETAIL.ITEM_CODE
+		AND IMG.ITEM_CODE = DETAIL.ITEM_CODE
+		AND MEMBER_ID = #{memberId}
+		AND IS_MAIN = 'Y'
+		ORDER BY BUY_DATE DESC
+	</select> -->
+
+
+
+</mapper>

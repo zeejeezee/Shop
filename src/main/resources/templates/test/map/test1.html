@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<table>
+		<tr>
+			<td>Key</td>
+			<td>Value</td>
+		</tr>
+		<tr th:each="data : ${mapData}">
+			<td th:text="${data.key}"></td>
+			<td th:text="${data.value}"></td>
+		</tr>
+	</table>
+</body>
+</html>

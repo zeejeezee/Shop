@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 해당 파일에 모든 쿼리문을 작성 -->
+<mapper namespace="buyMapper">
+	<resultMap type="kh.study.shop.buy.vo.BuyVO" id="buy">
+		<id column="BUY_CODE" 					property="buyCode"/>
+		<result column="MEMBER_ID" 				property="memberId"/>
+		<result column="BUY_DATE" 				property="buyDate"/>
+		<result column="TOTAL_PRICE" 			property="totalPrice"/>
+		<result column="BUY_CNT"				property="buyCnt"/>
+		<collection property="buyDetailList" 	resultMap="buyDetail"/>
+	</resultMap>
+	
+	<resultMap type="kh.study.shop.buy.vo.BuyDetailVO" id="buyDetail">
+		<id column="BUY_DETAIL_CODE" 		property="buyDetailCode"/>
+		<result column="ITEM_CODE" 			property="itemCode"/>
+		<result column="BUY_CODE" 			property="buyCode"/>
+		<result column="BUY_AMOUNT" 		property="buyAmount"/>
+		<result column="BUY_PRICE" 			property="buyPrice"/>
+		<association property="itemVO" 		resultMap="itemMapper.item"/>
+	</resultMap>
+	
+	<!-- 쌤은 그냥 조회되는 컬럼 다 넣음 itemVO 넣은 건 잘한 거 -->
+<!-- 	<resultMap type="kh.study.shop.buy.vo.BuyDetailVO" id="buyDetail">
+		<id column="BUY_DETAIL_CODE" property="buyDetailCode" />
+		<result column="CATE_NAME" property="cateName" />
+		<result column="ATTACHED_NAME" property="attachedName" />
+		<result column="ITEM_NAME" property="itemName" />
+		<result column="ITEM_PRICE" property="itemPrice" />
+		<result column="BUY_AMOUNT" property="buyAmount" />
+		<result column="BUY_PRICE" property="buyPrice" />
+		<result column="BUY_CODE" property="buyCode" />
+	</resultMap> -->
+	
+	
+	
+
+	<!-- 장바구니 선택한 상품 구매할 목록 조회-->
+	<select id="selectBuyingList" resultMap="cartMapper.cart">
+		SELECT ITEM_CODE
+			, (SELECT ITEM_NAME
+				FROM SHOP_ITEM
+				WHERE ITEM_CODE = C.ITEM_CODE) AS ITEM_NAME
+			, (SELECT ITEM_PRICE
+				FROM SHOP_ITEM
+				WHERE ITEM_CODE = C.ITEM_CODE) AS ITEM_PRICE
+			, CART_AMOUNT
+			, (SELECT ATTACHED_NAME
+				FROM ITEM_IMG
+				WHERE ITEM_CODE = C.ITEM_CODE
+				AND IS_MAIN = 'Y') AS ATTACHED_NAME
+			, CART_CODE
+		FROM SHOP_CART C
+		WHERE CART_CODE IN
+		<foreach collection="cartCodeList" item="cartCode" open="(" close=")" separator=",">
+			#{cartCode}
+		</foreach>
+	</select>
+	
+	
+	<select id="selectNextBuyCode" resultType="String"> <!-- BUY_001 형태로 가지고 와야 해서 String -->
+		SELECT 'BUY_'||LPAD(NVL(MAX(TO_NUMBER(SUBSTR(BUY_CODE, 5))), 0) + 1, 3, 0)
+		FROM SHOP_BUY
+	</select>
+	
+	<insert id="insertBuy">
+		INSERT INTO SHOP_BUY (
+			BUY_CODE
+			, MEMBER_ID
+			, TOTAL_PRICE
+		) VALUES (
+			#{buyCode}
+			, #{memberId}
+			, #{totalPrice}
+		)
+	</insert>
+	
+	<insert id="insertBuyDetail"><!-- select 한 게 insert 될 수 있도록 만듦 -->
+		INSERT INTO SHOP_BUY_DETAIL (
+			BUY_DETAIL_CODE
+			, ITEM_CODE
+			, BUY_CODE
+			, BUY_AMOUNT)
+		<foreach collection="buyDetailList" item="buyDetailVO" separator="UNION ALL" index="status"> <!-- status는 0부터 1씩 증가 -->
+		SELECT #{buyCode}||'_'||LPAD(#{status} + 1, 2, 0)
+			, #{buyDetailVO.itemCode}
+			, #{buyCode} <!-- buyVO 안에 buyCode가 있어서 그냥 써도 된다 -->
+			, #{buyDetailVO.buyAmount}
+		FROM DUAL
+		</foreach>
+		
+	</insert>
+		
+	<select id="getCartInfoForBuy" resultMap="cartMapper.cart">
+		SELECT ITEM_CODE
+			, CART_AMOUNT
+			, TOTAL_PRICE
+		FROM SHOP_CART
+		WHERE CART_CODE IN (
+		<foreach collection="cartCodeList" item="cartCode" separator=",">
+			#{cartCode}
+		</foreach>
+		)
+	</select>
+	
+	
+
+	
+
+</mapper>
+
+
+
+
+
