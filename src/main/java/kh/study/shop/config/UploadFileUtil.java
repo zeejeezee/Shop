@@ -13,7 +13,8 @@ public class UploadFileUtil {
 	//파일이 첨부될 경로
 	//변수 앞에 final을 붙이면 상수처럼 바뀌어서 변경 불가능
 	//상수는 웬만하면 대문자로
-	private static final String UPLOAD_PATH = "D:\\workspaceSTS\\Shop\\src\\main\\resources\\static\\images\\";
+	private static final String UPLOAD_PATH = "/Users/yz/git/Shop/src/main/resources/static/images/";
+	//D:\\workspaceSTS\\Shop\\src\\main\\resources\\static\\images\\
 	
 	//파일 첨부
 	public static ImgVO uploadFile(MultipartFile mainImg) {
